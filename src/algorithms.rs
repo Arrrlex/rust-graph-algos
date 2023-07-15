@@ -13,7 +13,7 @@ pub fn generate_graphs_up_to(n: usize) -> Vec<UndirectedGraph> {
     let mut graphs: Vec<UndirectedGraph> = Vec::new();
 
     for n_verts in (1..).take(n) {
-        for graph in generate_graphs(n).into_iter() {
+        for graph in generate_graphs(n_verts).into_iter() {
             graphs.push(graph);
         }
     }

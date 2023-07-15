@@ -13,7 +13,7 @@ fn main() {
     // println!("{:?}", graph);
     // println!("{:?}", graph.adjacency_matrix());
 
-    let graphs = algorithms::generate_graphs(4);
+    let graphs = algorithms::generate_graphs_up_to(4);
     for graph in graphs.into_iter() {
         println!("{:?}", graph.adjacency_matrix());
     }
