@@ -1,4 +1,5 @@
 use std::cmp::max;
+use std::cmp::Ordering;
 
 pub trait Graph {
     fn verts(&self) -> Vec<usize>;
@@ -16,10 +17,19 @@ pub struct DirectedGraph {
     pub edges: Vec<DirectedEdge>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct DirectedEdge {
     pub start: usize,
     pub end: usize,
+}
+
+impl DirectedEdge {
+    fn undirected(&self) -> UndirectedEdge {
+        UndirectedEdge {
+            start: self.start,
+            end: self.end,
+        }
+    }
 }
 
 impl DirectedGraph {
@@ -88,6 +98,19 @@ impl PartialEq for UndirectedEdge {
     }
 }
 
+impl Eq for UndirectedEdge {}
+
+impl Ord for UndirectedEdge {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self.start, self.end).cmp(&(other.start, other.end))
+    }
+}
+
+impl PartialOrd for UndirectedEdge {
+    fn partial_cmp(&self, other: &Self) ->Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
 
 impl UndirectedGraph {
     pub fn new() -> Self {
@@ -135,5 +158,15 @@ impl Graph for UndirectedGraph {
             matrix[edge.end][edge.start] = 1;
         }
         matrix
+    }
+}
+
+pub fn to_undirected_graph(g: DirectedGraph) -> UndirectedGraph {
+    let mut edges: Vec<UndirectedEdge> = g.edges.into_iter().map(|x| x.undirected()).collect();
+    edges.sort();
+    edges.dedup();
+    UndirectedGraph {
+        n_verts: g.n_verts,
+        edges: edges,
     }
 }
