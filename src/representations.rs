@@ -79,7 +79,7 @@ impl Graph for DirectedGraph {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UndirectedGraph {
     pub n_verts: usize,
     pub edges: Vec<UndirectedEdge>,
