@@ -1,6 +1,3 @@
-use crate::representations::UndirectedEdge;
-use crate::representations::UndirectedGraph;
-
 pub mod generate {
     use crate::representations::UndirectedGraph;
     pub fn generate_graphs_up_to(n: usize) -> Vec<UndirectedGraph> {
