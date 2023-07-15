@@ -1,8 +1,8 @@
 mod algorithms;
 mod representations;
 
-use crate::representations::Graph;
 use crate::algorithms::generate::generate_graphs_up_to;
+use crate::representations::Graph;
 
 fn main() {
     // let graph = representations::UndirectedGraph::new()
