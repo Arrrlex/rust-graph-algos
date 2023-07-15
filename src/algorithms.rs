@@ -1,9 +1,8 @@
-
-
-
 use crate::representations::UndirectedGraph;
+use crate::representations::UndirectedEdge;
 
-mod generate {
+pub mod generate {
+    use crate::representations::UndirectedGraph;
     pub fn generate_graphs_up_to(n: usize) -> Vec<UndirectedGraph> {
         let mut graphs: Vec<UndirectedGraph> = Vec::new();
 
@@ -34,12 +33,13 @@ mod generate {
     }
 }
 
-mod pathfinding {
-    def breadth_first_search(graph: &UndirectedGraph, start: usize, end: usize) -> Option<Vec<UndirectedEdge>> {
+pub mod pathfinding {
+    use crate::representations::{UndirectedGraph, UndirectedEdge};
+    fn breadth_first_search(graph: &UndirectedGraph, start: usize, end: usize) -> Option<Vec<UndirectedEdge>> {
         Some(Vec::new())
     }
 
-    def depth_first_search(graph: &UndirectedGraph, start: usize, end: usize) -> Option<Vec<UndirectedEdge>> {
+    fn depth_first_search(graph: &UndirectedGraph, start: usize, end: usize) -> Option<Vec<UndirectedEdge>> {
         Some(Vec::new())
     }
 }
