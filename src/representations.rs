@@ -56,7 +56,6 @@ impl Graph for DirectedGraph {
         let mut matrix = vec![vec![0; self.n_verts]; self.n_verts];
         for edge in &self.edges {
             matrix[edge.start][edge.end] = 1;
-            matrix[edge.start][edge.end] = 1;
         }
         matrix
     }
@@ -70,6 +69,7 @@ impl Graph for DirectedGraph {
     }
 }
 
+#[derive(Debug)]
 pub struct UndirectedGraph {
     pub n_verts: usize,
     pub edges: Vec<UndirectedEdge>,
@@ -89,7 +89,7 @@ impl PartialEq for UndirectedEdge {
 }
 
 
-impl DirectedGraph {
+impl UndirectedGraph {
     pub fn new() -> Self {
         Self {
             n_verts: 0,
@@ -111,7 +111,29 @@ impl DirectedGraph {
 }
 
 impl Graph for UndirectedGraph {
-    fn adjacency_list(&self) -> Vec<Vec<usize>> {}
+    fn verts(&self) -> Vec<usize> {
+        (0..).take(self.n_verts).collect()
+    }
 
-    fn adjacency_matrix(&self) -> Vec<Vec<usize>> {}
+    fn n_verts(&self) -> usize {
+        self.n_verts
+    }
+
+    fn adjacency_list(&self) -> Vec<Vec<usize>> {
+        let mut list = vec![Vec::new(); self.n_verts];
+        for edge in &self.edges {
+            list[edge.start].push(edge.end);
+            list[edge.end].push(edge.start);
+        }
+        list
+    }
+
+    fn adjacency_matrix(&self) -> Vec<Vec<usize>> {
+        let mut matrix = vec![vec![0; self.n_verts]; self.n_verts];
+        for edge in &self.edges {
+            matrix[edge.start][edge.end] = 1;
+            matrix[edge.end][edge.start] = 1;
+        }
+        matrix
+    }
 }
