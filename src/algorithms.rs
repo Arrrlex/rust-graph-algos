@@ -1,7 +1,3 @@
-#[macro_use]
-extern crate queues;
-
-use queues::{Queue, queue};
 
 pub mod generate {
     use crate::representations::UndirectedGraph;
@@ -40,6 +36,9 @@ pub mod generate {
 
 pub mod pathfinding {
     use crate::representations::UndirectedGraph;
+    use crate::representations::Graph;
+    use queues::{Queue, queue, IsQueue};
+
     pub fn breadth_first_search(
         graph: &UndirectedGraph,
         start: usize,
@@ -47,25 +46,25 @@ pub mod pathfinding {
     ) -> Option<Vec<usize>> {
         let adjacency_list = graph.adjacency_list();
         let mut prev: Vec<Option<usize>> = vec![Option::None; graph.n_verts];
-        prev[start] = start;
-        let mut qu: Queue<usize> = queue![start];
+        prev[start] = Option::Some(start);
+        let mut qu = queue![&start];
 
         while qu.peek().is_ok() {
-            let node = qu.remove();
-            for m in adjacency_list[node] {
-                if prev[m].is_some() {
+            let node = qu.remove().ok().unwrap();
+            for next_node in &adjacency_list[*node] {
+                if prev[*next_node].is_some() {
                     continue;
                 } else {
-                    prev[m] = n;
+                    prev[*next_node] = Some(*node);
                 }
-                if m == end {
+                if *next_node == end {
                     return make_path(prev, start, end);
                 }
-                qu.push(m);
+                qu.add(next_node);
             }
         }
 
-        return Option::None;
+        Option::None
     }
 
     fn make_path(prev: Vec<Option<usize>>, start: usize, end: usize) -> Option<Vec<usize>> {
@@ -74,21 +73,21 @@ pub mod pathfinding {
         let mut prev_node = prev[node].unwrap();
 
         while node != prev_node {
-            rev_path.append(node);
+            rev_path.push(node);
             node = prev[node].unwrap();
             if node == start {
-                return Option::Some(rev_path.reverse());
+                return Option::Some(rev_path.into_iter().rev().collect());
             }
         }
 
-        Option::None;
+        Option::None
     }
 
-    pub fn depth_first_search(
-        graph: &UndirectedGraph,
-        start: usize,
-        end: usize,
-    ) -> Option<Vec<UndirectedEdge>> {
-        Some(Vec::new())
-    }
+    // pub fn depth_first_search(
+    //     graph: &UndirectedGraph,
+    //     start: usize,
+    //     end: usize,
+    // ) -> Option<Vec<UndirectedEdge>> {
+    //     Some(Vec::new())
+    // }
 }
