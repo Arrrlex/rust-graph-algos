@@ -68,17 +68,18 @@ pub mod pathfinding {
     }
 
     fn make_path(prev: Vec<Option<usize>>, start: usize, end: usize) -> Option<Vec<usize>> {
-        let mut rev_path: Vec<usize> = Vec::new();
+        let mut rev_path: Vec<usize> = vec![end];
         let mut node = end;
         let mut prev_node = prev[node].unwrap();
 
         while node != prev_node {
-            rev_path.push(node);
-            node = prev_node;
-            prev_node = prev[prev_node].unwrap();
+            rev_path.push(prev_node);
             if prev_node == start {
                 return Option::Some(rev_path.into_iter().rev().collect());
             }
+            node = prev_node;
+            prev_node = prev[prev_node].unwrap();
+
         }
 
         Option::None
