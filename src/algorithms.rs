@@ -1,3 +1,8 @@
+#[macro_use]
+extern crate queues;
+
+use queues::{Queue, queue};
+
 pub mod generate {
     use crate::representations::UndirectedGraph;
     pub fn generate_graphs_up_to(n: usize) -> Vec<UndirectedGraph> {
@@ -34,19 +39,52 @@ pub mod generate {
 }
 
 pub mod pathfinding {
-    use crate::representations::{UndirectedEdge, UndirectedGraph};
-    fn breadth_first_search(
+    use crate::representations::UndirectedGraph;
+    pub fn breadth_first_search(
         graph: &UndirectedGraph,
         start: usize,
         end: usize,
-    ) -> Option<Vec<UndirectedEdge>> {
+    ) -> Option<Vec<usize>> {
         let adjacency_list = graph.adjacency_list();
-        let mut path: Vec<UndirectedEdge> = Vec.new();
-        let mut head: usize = start;
+        let mut prev: Vec<Option<usize>> = vec![Option::None; graph.n_verts];
+        prev[start] = start;
+        let mut qu: Queue<usize> = queue![start];
 
+        while qu.peek().is_ok() {
+            let node = qu.remove();
+            for m in adjacency_list[node] {
+                if prev[m].is_some() {
+                    continue;
+                } else {
+                    prev[m] = n;
+                }
+                if m == end {
+                    return make_path(prev, start, end);
+                }
+                qu.push(m);
+            }
+        }
+
+        return Option::None;
     }
 
-    fn depth_first_search(
+    fn make_path(prev: Vec<Option<usize>>, start: usize, end: usize) -> Option<Vec<usize>> {
+        let mut rev_path: Vec<usize> = Vec::new();
+        let mut node = end;
+        let mut prev_node = prev[node].unwrap();
+
+        while node != prev_node {
+            rev_path.append(node);
+            node = prev[node].unwrap();
+            if node == start {
+                return Option::Some(rev_path.reverse());
+            }
+        }
+
+        Option::None;
+    }
+
+    pub fn depth_first_search(
         graph: &UndirectedGraph,
         start: usize,
         end: usize,
