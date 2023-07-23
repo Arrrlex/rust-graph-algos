@@ -40,7 +40,10 @@ pub mod pathfinding {
         start: usize,
         end: usize,
     ) -> Option<Vec<UndirectedEdge>> {
-        Some(Vec::new())
+        let adjacency_list = graph.adjacency_list();
+        let mut path: Vec<UndirectedEdge> = Vec.new();
+        let mut head: usize = start;
+
     }
 
     fn depth_first_search(
