@@ -2,13 +2,20 @@ mod algorithms;
 mod representations;
 
 use crate::algorithms::generate::generate_graphs_up_to;
-use crate::representations::Graph;
+use crate::algorithms::pathfinding::breadth_first_search;
+use crate::representations::{Graph, UndirectedGraph};
 
 fn main() {
-    let graphs = generate_graphs_up_to(4);
-    for graph in graphs.into_iter() {
-        println!("{:?}", graph.adjacency_matrix());
-    }
+    let graph = UndirectedGraph{ n_verts: 5, edges: Vec::new() }
+        .add_edge(0, 1)
+        .add_edge(1, 2)
+        .add_edge(2, 3)
+        .add_edge(3, 5)
+        .add_edge(3, 4)
+        .add_edge(4, 5);
+
+    let path = breadth_first_search(&graph, 0, 5);
+    println!("{:?}", path);
 }
 
 

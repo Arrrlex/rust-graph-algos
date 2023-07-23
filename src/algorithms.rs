@@ -74,8 +74,9 @@ pub mod pathfinding {
 
         while node != prev_node {
             rev_path.push(node);
-            node = prev[node].unwrap();
-            if node == start {
+            node = prev_node;
+            prev_node = prev[prev_node].unwrap();
+            if prev_node == start {
                 return Option::Some(rev_path.into_iter().rev().collect());
             }
         }
