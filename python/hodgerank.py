@@ -1,4 +1,5 @@
 """From http://niplav.site/notes.html#Nothing_to_See_Here_Just_An_Implementation_of_HodgeRank"""
+
 import numpy as np
 import networkx as nx
 import itertools as it
@@ -62,3 +63,10 @@ def decompose(g):
 def hodgerank(prefs):
         g=prefgraph(prefs)
         return decompose(g)
+
+def main():
+    prefs = {0:np.array([5,3]),1:np.array([4,5]),2:np.array([3, np.nan]),3:np.array([5,2])}
+    print(hodgerank(prefs))
+
+if __name__ == "__main__":
+    main()
