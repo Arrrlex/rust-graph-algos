@@ -5,26 +5,32 @@ import numpy as np
 import networkx as nx
 import itertools as it
 
+K = TypeVar("K")
+
 
 def positive_edges(prefs):
-    edges = []
-    for e in it.combinations(prefs.keys(), 2):
-        if np.all(np.isnan(prefs[e[0]] - prefs[e[1]])):
-            weight = np.nan
-        else:
-            weight = np.nanmean(prefs[e[0]] - prefs[e[1]])
-
-        n = np.sum(~np.isnan(prefs[e[0]] - prefs[e[1]]))
-        if np.isnan(weight):
+    for a, b in it.combinations(prefs.keys(), 2):
+        pref_delta = prefs[a] - prefs[b]
+        if np.all(np.isnan(pref_delta)):
             continue
-        elif weight >= 0:
-            edges.append((e[0], e[1], {"weight": weight, "n": n}))
+
+        weight = np.nanmean(pref_delta)
+        n = np.sum(~np.isnan(pref_delta))
+        # Add edge in direction where pref_delta is positive
+        if weight >= 0:
+            yield (a, b, {"weight": weight, "n": n})
         else:
-            edges.append((e[1], e[0], {"weight": -weight, "n": n}))
-    return edges
+            yield (b, a, {"weight": -weight, "n": n})
 
 
-def prefgraph(prefs):
+def prefgraph(prefs: Mapping[K, np.ndarray[int]]) -> nx.DiGraph:
+    """
+    Construct a directed graph from a set of preferences from voters.
+
+    prefs is a mapping from options to preference vectors. Each preference vector
+    is a numpy array of integers, where the i-th entry is the preference of the
+    i-th voter for that option. Higher numbers mean higher preference.
+    """
     g = nx.DiGraph()
     g.add_nodes_from(list(prefs.keys()))
     edges = positive_edges(prefs)
@@ -33,40 +39,26 @@ def prefgraph(prefs):
 
 
 def decompose(g):
-    f = np.array([g[e[0]][e[1]]["weight"] for e in g.edges])
-    W = np.diag([g[e[0]][e[1]]["n"] for e in g.edges])
+    f = np.array([g[a][b]["weight"] for a, b in g.edges])
+    W = np.diag([g[a][b]["n"] for a, b in g.edges])
 
     origins = np.zeros((len(g.edges), len(g.nodes)))
 
-    idx = dict()
-    nodes = list(g.nodes)
-    for i in range(0, len(nodes)):
-        idx[nodes[i]] = i
+    idx = {n: i for i, n in enumerate(g.nodes)}
 
-    origins = np.zeros((len(g.edges), len(g.nodes)))
-    c = 0
-    for e in g.edges:
-        sign = np.sign(g[e[0]][e[1]]["weight"])
+    for c, (a, b) in enumerate(g.edges):
+        sign = np.sign(g[a][b]["weight"])
         if np.isnan(sign):
             sign = 0
-        origins[c][e[0]] = sign * -1
-        origins[c][e[1]] = sign
-        c = c + 1
+        origins[c][a] = -sign
+        origins[c][b] = sign
 
     try:
         s = -np.linalg.pinv(origins.T @ W @ origins) @ origins.T @ W @ f
     except np.linalg.LinAlgError:
         s = np.zeros(len(list(g.nodes)))
 
-    values = dict()
-
-    for option in idx.keys():
-        values[option] = s[idx[option]]
-
-    return values
-
-
-K = TypeVar("K")
+    return {n: s[idx[n]] for n in g.nodes}
 
 
 def hodgerank(prefs: Mapping[K, np.ndarray[int]]) -> Mapping[K, float]:
