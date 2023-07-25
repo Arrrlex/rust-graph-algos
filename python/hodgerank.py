@@ -1,5 +1,6 @@
 """From http://niplav.site/notes.html#Nothing_to_See_Here_Just_An_Implementation_of_HodgeRank"""
 
+from typing import Mapping, TypeVar
 import numpy as np
 import networkx as nx
 import itertools as it
@@ -65,7 +66,10 @@ def decompose(g):
     return values
 
 
-def hodgerank(prefs):
+K = TypeVar("K")
+
+
+def hodgerank(prefs: Mapping[K, np.ndarray[int]]) -> Mapping[K, float]:
     g = prefgraph(prefs)
     return decompose(g)
 
