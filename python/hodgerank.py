@@ -42,7 +42,7 @@ def decompose(g):
     f = np.array([g[a][b]["weight"] for a, b in g.edges])
     W = np.diag([g[a][b]["n"] for a, b in g.edges])
 
-    origins = np.zeros((len(g.edges), len(g.nodes)))
+    origins = np.zeros((g.number_of_edges(), g.number_of_nodes()))
 
     idx = {n: i for i, n in enumerate(g.nodes)}
 
@@ -50,8 +50,8 @@ def decompose(g):
         sign = np.sign(g[a][b]["weight"])
         if np.isnan(sign):
             sign = 0
-        origins[c][a] = -sign
-        origins[c][b] = sign
+        origins[c][idx[a]] = -sign
+        origins[c][idx[b]] = sign
 
     try:
         s = -np.linalg.pinv(origins.T @ W @ origins) @ origins.T @ W @ f
